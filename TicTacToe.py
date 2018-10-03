@@ -9,7 +9,7 @@ def signin():
     global root
 
     root = Tk()
-    root.title('OMEGALUL VERSION 6.9')
+    root.title('Tic Tac Toe Version 1.0')
 
     label1 = Label(root, text="Username")
     label2 = Label(root, text="Password")
@@ -22,9 +22,9 @@ def signin():
     entry2.grid(row=1, column=1)
 
 
-    check = Checkbutton(root, text="Check for OMEGALUL")
-    button1 = Button(root, text="Release the LUL", fg='red', command=checkID)
-    button2 = Button(root, text="No please, HELP!", fg='blue')
+    check = Checkbutton(root, text="Remember me")
+    button1 = Button(root, text="Play the game!", fg='red', command=checkID)
+    button2 = Button(root, text="Exit Program", fg='blue', command=root.destroy, padx=10)
 
     check.grid(row=2, columnspan=2)
     button1.grid(row=3)
@@ -36,9 +36,10 @@ def checkID():
     id = entry1.get()
     password = entry2.get()
 
-    if id == '' and password == '':
+    if id == 'Justin' and password == 'Youn':
         root.destroy()
         successful()
+        ticTacToe()
     else:
         failure()
 
@@ -56,7 +57,7 @@ def successful():
 
 def failure():
     root2 = Tk()
-    root2.title('Failure!')
+    root2.title('Failed to log in!')
     label = Label(root2, text='Wrong Username and Password!')
     label.configure(anchor="center")
     label.pack(padx=5, pady=3)
@@ -64,6 +65,10 @@ def failure():
     button = Button(root2, text='Try again', command=root2.destroy)
     button.pack()
     root2.mainloop()
+
+
+def ticTacToe():
+    return
 
 
 def main():
