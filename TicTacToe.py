@@ -1,7 +1,7 @@
 from tkinter import *
+from tkinter import ttk
 
-creds = 'tempfile.temp'
-
+playerSymbol = 'X'
 
 def signin():
     global entry1
@@ -25,7 +25,6 @@ def signin():
     check = Checkbutton(root, text="Remember me")
     button1 = Button(root, text="Play the game!", fg='red', command=checkID)
     button2 = Button(root, text="Exit Program", fg='blue', command=root.destroy, padx=10)
-
     check.grid(row=2, columnspan=2)
     button1.grid(row=3)
     button2.grid(row=3, column=1)
@@ -39,7 +38,6 @@ def checkID():
     if id == 'Justin' and password == 'Youn':
         root.destroy()
         successful()
-        ticTacToe()
     else:
         failure()
 
@@ -67,12 +65,57 @@ def failure():
     root2.mainloop()
 
 
-def ticTacToe():
-    return
+class Game:
+    def __init__(self, parent):
+        self.parent = parent
+        self.currentTile = 'X'
+        self.tiles = []
+        self.startGame()
+
+    def startGame(self):
+        self.gameFrame = Frame(self.parent)
+
+        for i in range(3):
+            for j in range(3):
+                tile = Tile(self.gameFrame, self.checkForWin)
+                tile.grid(row=i, column=j)
+                self.tiles.append(tile)
+        self.gameFrame.pack()
+
+    def checkForWin(self):
+        for x, y, z in [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]:
+            if self.tiles[x].marked == self.tiles[y].marked == self.tiles[z].marked == 'X':
+                print('p1 won')
+            elif self.tiles[x].marked == self.tiles[y].marked == self.tiles[z].marked == 'Y':
+                print('p2 won')
+
+
+class Tile(Label):
+    def __init__(self, parent, checkForWin):
+        Button.__init__(self, parent, font=('',30), width=5, height=2, justify='center', relief='raised')
+        self.checkForWin = checkForWin
+        self.bind('<Button-1>', self.markSym)
+        self.marked = '.'
+
+    def markSym(self, event):
+        global playerSymbol
+        if not self.marked == '.':
+            return
+        else:
+            self.config(text=playerSymbol)
+            self.marked = playerSymbol
+            if playerSymbol == 'X':
+                playerSymbol = 'O'
+            else:
+                playerSymbol = 'X'
+        self.checkForWin()
 
 
 def main():
-    signin()
+    root3 = Tk()
+    Game(root3)
+    root3.mainloop()
+    #signin()
 
 
 if __name__ == '__main__':
