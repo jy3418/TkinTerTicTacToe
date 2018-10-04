@@ -1,5 +1,7 @@
 from tkinter import *
 from tkinter import ttk
+from winsound import *
+
 
 playerSymbol = 'X'
 
@@ -45,12 +47,15 @@ def checkID():
 def successful():
     root1 = Tk()
     root1.title('Success!')
-    label = Label(root1, text='Log in successful.\nMoving on to game phase 1')
+    label = Label(root1, text='Log in successful.\nMoving on to the game')
     label.configure(anchor="center")
     label.pack(padx=5, pady=3)
     button = Button(root1, text='Next', command=root1.destroy)
     button.pack(pady=5)
     root1.mainloop()
+    root3 = Tk()
+    Game(root3)
+    root3.mainloop()
 
 
 def failure():
@@ -68,16 +73,19 @@ def failure():
 class Game:
     def __init__(self, parent):
         self.parent = parent
-        self.currentTile = 'X'
         self.tiles = []
         self.startGame()
 
     def startGame(self):
         self.gameFrame = Frame(self.parent)
+        self.parent.title("Tic Tac Toe: Player 1's Turn (X)")
+        self.tiles = []
+        global playerSymbol
+        playerSymbol = 'X'
 
         for i in range(3):
             for j in range(3):
-                tile = Tile(self.gameFrame, self.checkForWin)
+                tile = Tile(self.gameFrame, self.checkForWin, self.parent)
                 tile.grid(row=i, column=j)
                 self.tiles.append(tile)
         self.gameFrame.pack()
@@ -85,14 +93,51 @@ class Game:
     def checkForWin(self):
         for x, y, z in [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]:
             if self.tiles[x].marked == self.tiles[y].marked == self.tiles[z].marked == 'X':
-                print('p1 won')
+                self.printResult('Player 1')
             elif self.tiles[x].marked == self.tiles[y].marked == self.tiles[z].marked == 'O':
-                print('p2 won')
+                self.printResult('Player 2')
+
+        # Check for tie
+        counter = 0
+        for i in range(9):
+            if not self.tiles[i].marked == '.' and not self.tiles[i].marked == ',':
+                counter += 1
+        if counter == 9:
+            self.printResult('Tie')
+
+    def printResult(self, player):
+        for i in range(9):
+            self.tiles[i].marked = ','
+        root4 = Tk()
+        root4.title('Winner Winner Chicken Dinner!')
+        label = Label(root4)
+        if player == 'Tie':
+            label.config(text='Game Tied!')
+        else:
+            label.config(text=player + ' Won!')
+        label.configure(anchor="center")
+        label.grid(row=0, columnspan=2)
+        button = Button(root4, text='Play again', command=lambda: self.playAgain(root4))
+        button.grid(row=1, padx=10, pady=10)
+        button2 = Button(root4, text='Close Game', command=lambda: self.closeApp(root4))
+        button2.grid(row=1,column=1, padx=10, pady=10)
+        root4.mainloop()
+
+    def closeApp(self, subRoot):
+        subRoot.destroy()
+        self.parent.destroy()
+
+    def playAgain(self, subRoot):
+        subRoot.destroy()
+        for widget in self.parent.winfo_children():
+            widget.destroy()
+        self.startGame()
 
 
 class Tile(Label):
-    def __init__(self, parent, checkForWin):
-        Button.__init__(self, parent, font=('',30), width=5, height=2, justify='center', relief='raised')
+    def __init__(self, parent, checkForWin, root):
+        Button.__init__(self, parent, font=('',30), width=5, height=2, justify='center', relief='raised', bg='blue')
+        self.root = root
         self.checkForWin = checkForWin
         self.bind('<Button-1>', self.markSym)
         self.marked = '.'
@@ -102,6 +147,12 @@ class Tile(Label):
         if not self.marked == '.':
             return
         else:
+            if playerSymbol == 'X':
+                self.config(fg='black')
+                self.root.title("Tic Tac Toe: Player 2's Turn (O)")
+            else:
+                self.config(fg='white')
+                self.root.title("Tic Tac Toe: Player 1's Turn (X)")
             self.config(text=playerSymbol)
             self.marked = playerSymbol
             if playerSymbol == 'X':
@@ -112,10 +163,7 @@ class Tile(Label):
 
 
 def main():
-    root3 = Tk()
-    Game(root3)
-    root3.mainloop()
-    #signin()
+    signin()
 
 
 if __name__ == '__main__':
